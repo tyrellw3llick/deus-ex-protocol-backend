@@ -1,10 +1,8 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { CONFIG } from './config/env.js';
-import { connectDB } from './config/db.js';
+import { connectDB } from './config/db.js';inde
 import { errorHandler } from './middleware/errorHandler.js';
-
-console.log('Starting application...');
 
 const app: Application = express();
 
@@ -23,12 +21,8 @@ app.use(errorHandler);
 // Start server function
 const startServer = async (): Promise<void> => {
   try {
-    console.log('Attempting to connect to MongoDB...');
-
     // Connect to MongoDB first
     await connectDB();
-
-    console.log('MongoDB connected, starting Express server...');
 
     // Then start Express server
     app.listen(CONFIG.PORT, () => {

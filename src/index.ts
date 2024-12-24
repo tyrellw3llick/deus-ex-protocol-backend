@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { CONFIG } from './config/env.js';
-import { connectDB } from './config/db.js';inde
+import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app: Application = express();

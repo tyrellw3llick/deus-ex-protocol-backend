@@ -24,15 +24,15 @@ export class AuthService {
   static async authenticateUser(
     AuthRequestBody: AuthRequestBody,
   ): Promise<AuthResponseBody | null> {
+    const { pubKey } = AuthRequestBody;
+
+    // Validate address
+    if (!this.isValidSolanaAddress(pubKey)) {
+      console.error('Invalid Solana Address', pubKey);
+      return null;
+    }
+
     try {
-      const { pubKey } = AuthRequestBody;
-
-      // Validate address
-      if (!this.isValidSolanaAddress(pubKey)) {
-        console.error('Invalid Solana Address', pubKey);
-        return null;
-      }
-
       // Find/Create User
       const user = await UserModel.findOneAndUpdate(
         { walletAddress: pubKey.toLowerCase() },

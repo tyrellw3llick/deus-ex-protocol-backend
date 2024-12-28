@@ -22,9 +22,6 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.use('/auth', authRoutes);
 
-// Global error handler
-app.use(errorHandler);
-
 // Start server function
 const startServer = async (): Promise<void> => {
   try {

@@ -6,14 +6,22 @@ const router = Router();
 
 const loginHandler: RequestHandler = async (req: AuthRequest, res: Response) => {
   try {
-    const authRequestBody = req.body;
-    const authResponseBody = await AuthService.authenticateUser(authRequestBody);
+    if (!req.body.pubKey) {
+      res.status(400).json({
+        success: false,
+        message: 'Wallet address is required',
+      });
+      return;
+    }
+
+    const authResponseBody = await AuthService.authenticateUser(req.body);
 
     if (!authResponseBody) {
       res.status(401).json({
         success: false,
         message: 'Authentication failed',
       });
+      return;
     }
 
     res.status(200).json({
@@ -21,11 +29,13 @@ const loginHandler: RequestHandler = async (req: AuthRequest, res: Response) => 
       ...authResponseBody,
     });
   } catch (error) {
-    console.error('Authentication service error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during authentication',
-    });
+    if (!res.headersSent) {
+      console.error('Authentication service error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error during authentication',
+      });
+    }
   }
 };
 

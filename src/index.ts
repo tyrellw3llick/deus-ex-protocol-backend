@@ -3,6 +3,7 @@ import cors from 'cors';
 import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import authRoutes from './routes/auth.routes.js';
 
 const app: Application = express();
 
@@ -10,10 +11,16 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
+// ROUTES
+
 // Basic health check route
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
+
+// Authentication routes
+
+app.use('/auth', authRoutes);
 
 // Global error handler
 app.use(errorHandler);

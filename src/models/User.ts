@@ -8,6 +8,17 @@ const userSchema = new Schema<User>({
     unique: true,
     lowercase: true,
   },
+  tokenBalance: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
+  rank: {
+    type: Number,
+    enum: [0, 1, 2, 3],
+    default: 0,
+    required: true,
+  },
   dailyMessageQuota: {
     type: Number,
     default: 0,

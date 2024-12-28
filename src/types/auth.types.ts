@@ -13,6 +13,11 @@ export interface AuthResponseBody {
   };
 }
 
+export interface JWTPayload {
+  walletAddress: string;
+}
+
 export interface AuthRequest extends Request {
   body: AuthRequestBody;
+  verifiedWalletAddress?: string;
 }

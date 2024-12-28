@@ -4,6 +4,7 @@ import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
+import { authMiddleware } from './middleware/auth.middleware.js';
 
 const app: Application = express();
 
@@ -18,9 +19,12 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// Authentication routes
+// Authentication routes - They are not protected
 
 app.use('/auth', authRoutes);
+
+// Protected routes with the JWT
+app.use('/api', authMiddleware);
 
 // Start server function
 const startServer = async (): Promise<void> => {

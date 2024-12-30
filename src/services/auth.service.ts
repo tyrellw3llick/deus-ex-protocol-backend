@@ -39,6 +39,8 @@ export class AuthService {
         {
           $setOnInsert: {
             walletAddress: pubKey.toLowerCase(),
+            rank: 0,
+            tokenBalance: 0,
             dailyMessageQuota: 10,
             messagesLeft: 10,
             lastMessageReset: new Date(),
@@ -61,6 +63,8 @@ export class AuthService {
         token,
         user: {
           walletAddress: user.walletAddress,
+          tokenBalance: user.tokenBalance,
+          rank: user.rank,
           messagesLeft: user.messagesLeft,
           dailyMessageQuota: user.dailyMessageQuota,
         },

@@ -1,4 +1,4 @@
-import { RankTier, RankLabel, NumericRank } from '../types/rank.types.js';
+import { RankTier } from '../types/rank.types.js';
 import UserModel from '../models/User.js';
 import { User } from '../types/user.types.js';
 
@@ -21,6 +21,12 @@ export class RankService {
     if (!user) return;
 
     const rankTier = this.getRankTier(newBalance);
+
+    if (user.rank !== rankTier.numericRank) {
+      console.log(
+        `User ${walletAddress} rank changed from ${user.rank} to ${rankTier.numericRank}`,
+      );
+    }
 
     await UserModel.findOneAndUpdate(
       { walletAddress },

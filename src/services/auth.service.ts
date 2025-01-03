@@ -1,8 +1,11 @@
+// auth.service.ts
 import { PublicKey } from '@solana/web3.js';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/User.js';
 import { AuthResponseBody, AuthRequestBody } from '../types/auth.types.js';
 import { CONFIG } from '../config/env.js';
+import { SolanaService } from './solana.service.js';
+import { RankService } from './rank.service.js';
 
 export class AuthService {
   private static readonly JWT_SECRET = CONFIG.JWT_SECRET;
@@ -33,14 +36,17 @@ export class AuthService {
     }
 
     try {
-      // Find/Create User
-      const user = await UserModel.findOneAndUpdate(
+      // Get current token balance
+      const currentBalance = await SolanaService.getTokenBalance(pubKey);
+      console.log(`Current balance for ${pubKey}: ${currentBalance}`);
+
+      // First, ensure user exists with basic data
+      const initialUser = await UserModel.findOneAndUpdate(
         { walletAddress: pubKey.toLowerCase() },
         {
           $setOnInsert: {
             walletAddress: pubKey.toLowerCase(),
             rank: 0,
-            tokenBalance: 0,
             dailyMessageQuota: 10,
             messagesLeft: 10,
             lastMessageReset: new Date(),
@@ -49,24 +55,32 @@ export class AuthService {
         { upsert: true, new: true },
       );
 
-      // Verify if daily messages should reset
-      if (user.shouldResetMessage()) {
-        user.messagesLeft = user.dailyMessageQuota;
-        user.lastMessageReset = new Date();
-        await user.save();
+      if (!initialUser) {
+        throw new Error('Failed to create/find user');
+      }
+
+      // Use RankService to handle all rank and message quota logic
+      await RankService.updateUserRank(pubKey.toLowerCase(), currentBalance);
+      await RankService.resetDailyQuotaIfNeeded(initialUser);
+
+      // Get final user data
+      const updatedUser = await UserModel.findOne({ walletAddress: pubKey.toLowerCase() });
+
+      if (!updatedUser) {
+        throw new Error('Failed to find user after updates');
       }
 
       // Generate and return token
-      const token = this.generateToken(user.walletAddress);
+      const token = this.generateToken(updatedUser.walletAddress);
 
       return {
         token,
         user: {
-          walletAddress: user.walletAddress,
-          tokenBalance: user.tokenBalance,
-          rank: user.rank,
-          messagesLeft: user.messagesLeft,
-          dailyMessageQuota: user.dailyMessageQuota,
+          walletAddress: updatedUser.walletAddress,
+          tokenBalance: updatedUser.tokenBalance,
+          rank: updatedUser.rank,
+          messagesLeft: updatedUser.messagesLeft,
+          dailyMessageQuota: updatedUser.dailyMessageQuota,
         },
       };
     } catch (error) {

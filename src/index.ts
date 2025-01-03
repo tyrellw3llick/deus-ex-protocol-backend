@@ -3,6 +3,7 @@ import cors from 'cors';
 import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/user.routes.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
 
 const app: Application = express();
@@ -24,6 +25,7 @@ app.use('/auth', authRoutes);
 
 // Protected routes with the JWT
 app.use('/api', authMiddleware);
+app.use('/api/user', userRoutes);
 
 // Start server function
 const startServer = async (): Promise<void> => {

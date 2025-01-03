@@ -18,9 +18,6 @@ export interface AuthResponseBody {
 
 export interface JWTPayload {
   walletAddress: string;
-  rank: NumericRank;
-  tokenBalance: number;
-  messageQuota: number;
 }
 
 export interface AuthRequest extends Request {

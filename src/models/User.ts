@@ -6,7 +6,6 @@ const userSchema = new Schema<User>({
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
   },
   tokenBalance: {
     type: Number,

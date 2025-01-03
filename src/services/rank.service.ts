@@ -17,7 +17,7 @@ export class RankService {
   }
 
   static async updateUserRank(walletAddress: string, newBalance: number): Promise<void> {
-    const user = await UserModel.findOne({ walletAddress });
+    const user = await UserModel.findOne({ walletAddress: walletAddress });
     if (!user) return;
 
     const rankTier = this.getRankTier(newBalance);

@@ -42,10 +42,10 @@ export class AuthService {
 
       // First, ensure user exists with basic data
       const initialUser = await UserModel.findOneAndUpdate(
-        { walletAddress: pubKey.toLowerCase() },
+        { walletAddress: pubKey },
         {
           $setOnInsert: {
-            walletAddress: pubKey.toLowerCase(),
+            walletAddress: pubKey,
             rank: 0,
             dailyMessageQuota: 10,
             messagesLeft: 10,
@@ -60,11 +60,11 @@ export class AuthService {
       }
 
       // Use RankService to handle all rank and message quota logic
-      await RankService.updateUserRank(pubKey.toLowerCase(), currentBalance);
+      await RankService.updateUserRank(pubKey, currentBalance);
       await RankService.resetDailyQuotaIfNeeded(initialUser);
 
       // Get final user data
-      const updatedUser = await UserModel.findOne({ walletAddress: pubKey.toLowerCase() });
+      const updatedUser = await UserModel.findOne({ walletAddress: pubKey });
 
       if (!updatedUser) {
         throw new Error('Failed to find user after updates');

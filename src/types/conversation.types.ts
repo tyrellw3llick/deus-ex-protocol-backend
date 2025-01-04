@@ -4,5 +4,4 @@ export interface IConversation {
   aiName: string;
   lastMessageAt: Date;
   createdAt: Date;
-  isArchived: boolean;
 }

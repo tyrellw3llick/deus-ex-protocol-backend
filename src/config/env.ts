@@ -8,6 +8,7 @@ interface Config {
   JWT_SECRET: string;
   SOLANA_RPC_URL: string;
   TOKEN_MINT_ADDRESS: string;
+  ANTHROPIC_API_KEY: string;
 }
 
 if (!process.env.JWT_SECRET) {
@@ -25,4 +26,5 @@ export const CONFIG: Config = {
   JWT_SECRET: process.env.JWT_SECRET,
   SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
   TOKEN_MINT_ADDRESS: process.env.TOKEN_MINT_ADDRESS || '',
+  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',
 };

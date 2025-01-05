@@ -11,12 +11,12 @@ interface Config {
   ANTHROPIC_API_KEY: string;
 }
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in the environment variables');
-}
+const requiredEnvVars = ['JWT_SECRET', 'TOKEN_MINT_ADDRESS', 'ANTHROPIC_API_KEY'] as const;
 
-if (!process.env.TOKEN_MINT_ADDRESS) {
-  throw new Error('TOKEN_MINT_ADDRESS is not defined in the environment variables');
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`${envVar} is not defined in the environment variables`);
+  }
 }
 
 export const CONFIG: Config = {

@@ -10,6 +10,8 @@ const messageSchema = new Schema<IMessage>({
   content: {
     type: String,
     required: true,
+    minlength: [1, 'Message content cannot be empty'],
+    trim: true,
   },
   timestamp: {
     type: Date,

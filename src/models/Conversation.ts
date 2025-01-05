@@ -9,7 +9,7 @@ const conversationSchema = new Schema<IConversation>({
   },
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   aiName: {
     type: String,
@@ -27,6 +27,12 @@ const conversationSchema = new Schema<IConversation>({
     required: true,
   },
 });
+
+conversationSchema.methods.generateTitle = function (firstMessage: string) {
+  const baseTitle = firstMessage.trim().substring(0, 50);
+  this.title = firstMessage.length > 50 ? `${baseTitle}...` : baseTitle;
+  return this.title;
+};
 
 conversationSchema.index({ userId: 1, lastMessageAt: -1 });
 

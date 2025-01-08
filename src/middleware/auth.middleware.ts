@@ -22,14 +22,6 @@ export const authMiddleware = async (
 
     const decoded = jwt.verify(token, CONFIG.JWT_SECRET) as JWTPayload;
 
-    if (req.body.pubKey && req.body.pubKey !== decoded.walletAddress) {
-      res.status(401).json({
-        success: false,
-        message: 'Token does not match provided wallet address',
-      });
-      return;
-    }
-
     req.verifiedWalletAddress = decoded.walletAddress;
 
     next();

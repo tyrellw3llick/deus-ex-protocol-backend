@@ -21,6 +21,5 @@ export interface JWTPayload {
 }
 
 export interface AuthRequest extends Request {
-  body: AuthRequestBody;
   verifiedWalletAddress?: string;
 }

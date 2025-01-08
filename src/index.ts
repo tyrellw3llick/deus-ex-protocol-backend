@@ -4,6 +4,7 @@ import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import chatRoutes from './routes/chat.routes.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
 
 const app: Application = express();
@@ -26,6 +27,23 @@ app.use('/auth', authRoutes);
 // Protected routes with the JWT
 app.use('/api', authMiddleware);
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
+
+app.use((err: Error, req: Request, res: Response) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'INTERNAL_SERVER_ERROR',
+    message: 'An unexpected error occurred',
+  });
+});
+
+// Not found handler
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    error: 'NOT_FOUND',
+    message: 'The requested resource was not found',
+  });
+});
 
 // Start server function
 const startServer = async (): Promise<void> => {
@@ -39,7 +57,7 @@ const startServer = async (): Promise<void> => {
     });
   } catch (error) {
     console.error(
-      'Failed to start server:',
+      '❌ Failed to start server:',
       error instanceof Error ? error.message : 'Unknown error',
     );
     process.exit(1);

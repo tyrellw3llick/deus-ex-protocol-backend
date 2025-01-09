@@ -9,6 +9,7 @@ interface Config {
   SOLANA_RPC_URL: string;
   TOKEN_MINT_ADDRESS: string;
   ANTHROPIC_API_KEY: string;
+  ADMIN_PASSWORD: string;
 }
 
 const requiredEnvVars = ['JWT_SECRET', 'TOKEN_MINT_ADDRESS', 'ANTHROPIC_API_KEY'] as const;
@@ -27,4 +28,5 @@ export const CONFIG: Config = {
   SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
   TOKEN_MINT_ADDRESS: process.env.TOKEN_MINT_ADDRESS || '',
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || '',
 };

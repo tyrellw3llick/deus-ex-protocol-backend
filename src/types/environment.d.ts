@@ -8,6 +8,7 @@ declare global {
       SOLANA_RPC_URL: string;
       TOKEN_MINT_ADDRESS: string;
       ANTHROPIC_API_KEY: string;
+      ADMIN_PASSWORD: string;
     }
   }
 }

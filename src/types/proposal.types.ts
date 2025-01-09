@@ -1,4 +1,6 @@
-export interface IProposal {
+import { Document } from 'mongoose';
+
+export interface IProposal extends Document {
   title: string;
   description: string;
   roundId: number;

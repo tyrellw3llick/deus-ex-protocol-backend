@@ -1,6 +1,6 @@
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-export interface IVote {
+export interface IVote extends Document {
   userId: string;
   proposalId: Types.ObjectId;
   roundId: number;

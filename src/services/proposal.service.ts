@@ -76,7 +76,6 @@ export class ProposalService {
 
       if (proposals.length === 0) {
         throw new Error('No active proposals found in round');
-        throw new Error('No active proposals found in round');
       }
 
       const updates = proposals.map((proposal, index) => {

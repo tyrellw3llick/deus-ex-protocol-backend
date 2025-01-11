@@ -7,7 +7,7 @@ export interface IProposal extends Document {
   metrics: {
     totalVotes: number;
     totalTokensVoted: number;
-    uniqueVoter: number;
+    uniqueVoters: number;
   };
   status: 'active' | 'winner' | 'runnerup' | 'lost';
   startDate: Date;

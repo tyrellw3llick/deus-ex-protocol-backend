@@ -1,15 +1,18 @@
 import { Document } from 'mongoose';
 
+type ProposalStatus = 'active' | 'winner' | 'runnerup' | 'lost';
+
+interface ProposalMetrics {
+  totalVotes: number;
+  totalTokensVoted: number;
+  uniqueVoters: number;
+}
+
 export interface IProposal extends Document {
   title: string;
   description: string;
   roundId: number;
-  metrics: {
-    totalVotes: number;
-    totalTokensVoted: number;
-    uniqueVoters: number;
-  };
-  status: 'active' | 'winner' | 'runnerup' | 'lost';
-  startDate: Date;
+  metrics: ProposalMetrics;
+  status: ProposalStatus;
   endDate: Date;
 }

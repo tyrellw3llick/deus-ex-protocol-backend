@@ -3,33 +3,39 @@ import { IProposal } from '../types/proposal.types.js';
 
 const proposalSchema = new Schema<IProposal>({
   title: {
-    type: String,
     required: true,
+    type: String,
     trim: true,
   },
   description: {
-    type: String,
     required: true,
+    type: String,
     trim: true,
   },
   roundId: {
-    type: Number,
     required: true,
+    type: Number,
     index: true,
   },
   metrics: {
-    totalVotes: { type: Number, default: 0 },
-    totalTokensVoted: { type: Number, default: 0 },
-    uniqueVoters: { type: Number, default: 0 },
+    totalVotes: {
+      type: Number,
+      defaul: 0,
+    },
+    totalTokensVoted: {
+      type: Number,
+      defaul: 0,
+    },
+    uniqueVoters: {
+      type: Number,
+      defaul: 0,
+    },
   },
   status: {
     type: String,
-    enum: ['active', 'winner', 'runnerup', 'lost'],
-    default: 'active',
-  },
-  startDate: {
-    type: Date,
     required: true,
+    enum: ['active', 'winner', 'closed', 'runnerup'],
+    default: 'active',
   },
   endDate: {
     type: Date,

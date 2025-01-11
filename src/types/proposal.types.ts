@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 type ProposalStatus = 'active' | 'winner' | 'runnerup' | 'lost';
 
@@ -9,6 +9,7 @@ interface ProposalMetrics {
 }
 
 export interface IProposal extends Document {
+  _id: Types.ObjectId;
   title: string;
   description: string;
   roundId: number;

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import ProposalModel from '../models/Proposal.js';
 import VoteModel from '../models/Vote.js';
 
@@ -52,7 +52,7 @@ export class ProposalService {
   /**
    * Get proposal by ID
    */
-  static async getProposalById(proposalId: string) {
+  static async getProposalById(proposalId: Types.ObjectId | string) {
     try {
       return await ProposalModel.findById(proposalId);
     } catch (error) {

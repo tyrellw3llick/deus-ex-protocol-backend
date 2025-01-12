@@ -15,6 +15,7 @@ const sendMessageHandler = async (req: SendMessageRequest, res: Response) => {
   try {
     if (!content || !aiName) {
       res.status(400).json({
+        success: false,
         error: 'INVALID_INPUT',
         message: 'Content and AI name are required',
       });
@@ -27,7 +28,12 @@ const sendMessageHandler = async (req: SendMessageRequest, res: Response) => {
       aiName,
     });
 
-    res.status(200).json(chatResponse);
+    res.status(200).json({
+      success: true,
+      data: {
+        chatResponse,
+      },
+    });
   } catch (error) {
     if (error instanceof ChatError) {
       res.status(error.statusCode).json({
@@ -39,6 +45,7 @@ const sendMessageHandler = async (req: SendMessageRequest, res: Response) => {
 
     console.error('Unexpected chat error:', error);
     res.status(500).json({
+      success: false,
       error: 'INTERNAL_SERVER_ERROR',
       message: 'An unexpected error occurred',
     });

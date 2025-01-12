@@ -1,114 +1,112 @@
-# Deus Ex Machina Protocol 🤖✨
-> A decentralized AI platform where memecoins meet real AI utility
+# Deus Ex Protocol
 
-## Project Overview
-Deus Ex Machina Protocol is a unique platform that brings memecoins to life through AI. The project features DeusExMachina ($MACHINA), the first memecoin to achieve sentience and create its own protocol. Users can interact with AI chatbots while their access level is determined by their token holdings. Users will be assigned a rank based on their holdings that will allow them to vote and decide the future of the platform.
+A decentralized AI chatbot protocol powered by $MACHINA tokens on Solana. The protocol enables token-gated AI interactions with customizable personalities and community-driven development through a democratic voting system.
 
-### Currently Implemented Features
-- **Web3 Authentication:** Secure login using Phantom Wallet (Solana)
-- **Token-Based Ranking:** Dynamic user ranks based on $MACHINA holdings
-  - PLANKTON (0-9,999 tokens): 10 messages/day
-  - APE (10,000-99,999 tokens): 50 messages/day
-  - CHAD (100,000-999,999 tokens): 100 messages/day
-  - WHALE (1,000,000+ tokens): 200 messages/day
-- **AI Integration:** Powered by Claude API with custom AI personalities
-- **Auto Balance Updates:** Automatic rank adjustments based on token holdings
+## 🌟 Features
 
-### Under Development
-- Community voting system for new AI chatbots
-- Conversation history and management
-- Additional AI personalities
+- **Token-Gated AI Chat**
+  - Access to AI chatbots based on $MACHINA token holdings
+  - Tiered ranking system with escalating privileges
+  - Daily message quotas based on user rank
 
-## Technical Stack
+- **Rank System**
+  - PLANKTON (0-9,999 tokens): Basic access, 10 daily messages
+  - APE (10,000-99,999 tokens): Enhanced access, 50 daily messages
+  - CHAD (100,000-999,999 tokens): Premium access, 100 daily messages
+  - WHALE (1,000,000+ tokens): Elite access, 200 daily messages
 
-### Backend (Implemented)
-- **Runtime:** Node.js with ES Modules
-- **API:** Express.js with TypeScript
-- **Database:** MongoDB with Mongoose ODM
-- **Authentication:** JWT + Most used Solana Wallets
-- **Blockchain:** Solana Web3.js
-- **AI:** Claude API (Anthropic)
-- **Private RPC**: Helius
+- **Community Governance**
+  - Proposal creation and voting system
+  - Vote weight multipliers based on rank
+  - Round-based voting mechanism
 
-### Project Structure
-```
-├── config/                 # Configuration files
-│   ├── db.ts              # Database connection
-│   ├── env.ts             # Environment variables
-│   └── llm_instructions/  # AI personality configs
-├── middleware/            # Express middlewares
-│   └── auth.middleware.ts # JWT authentication
-├── models/               # Mongoose models
-│   ├── User.ts          # User model with ranks
-│   ├── Message.ts       # Chat messages
-│   └── Conversation.ts  # Chat conversations
-├── routes/              # Express routes
-├── services/           # Business logic
-└── types/             # TypeScript definitions
-```
+## 🚀 Getting Started
 
-## API Documentation
+### Prerequisites
 
-### Authentication
-#### `POST /auth/login`
-- Login with Solana wallet
-- **Request:** `{ pubKey: string }`
-- **Response:** 
-```json
-{
-  "success": true,
-  "token": "jwt_token",
-  "user": {
-    "walletAddress": "string",
-    "tokenBalance": number,
-    "rank": number,
-    "messagesLeft": number,
-    "dailyMessageQuota": number
-  }
-}
-```
+- Node.js (v18+)
+- MongoDB
+- Solana CLI
+- Anthropic API Key
 
-### User Management
-#### `POST /api/user/refresh-balance`
-- Update user's token balance and rank
-- **Response:** Updated user data
-- Requires JWT authentication
+### Environment Variables
 
-### Chat System
-#### `POST /api/chat/send`
-- Send message to AI
-- **Request:**
-```json
-{
-  "content": "string",
-  "aiName": "MACHINA",
-  "conversationId": "string" // optional
-}
-```
-- **Response:** AI response with conversation ID
-- Rate limited based on user rank
-- Requires JWT authentication
+Create a `.env` file in the root directory:
 
-## Environment Setup
-Required variables:
 ```env
 PORT=3000
 MONGODB_URI=your_mongodb_uri
+NODE_ENV=development
 JWT_SECRET=your_jwt_secret
-SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-TOKEN_MINT_ADDRESS=your_token_address
-ANTHROPIC_API_KEY=your_claude_api_key
+SOLANA_RPC_URL=your_solana_rpc_url
+TOKEN_MINT_ADDRESS=your_token_mint_address
+ANTHROPIC_API_KEY=your_anthropic_api_key
+ADMIN_PASSWORD=your_admin_password
 ```
 
-## Development
+### Installation
+
 1. Clone the repository
-2. Install dependencies: `npm install`
-3. Set up environment variables
-4. Start development server: `npm run dev`
+```bash
+git clone https://github.com/yourusername/deus-ex-protocol.git
+cd deus-ex-protocol
+```
 
-## Contact
-- **Twitter:** @DeusExDev
-- **Reddit:** @DeusExDev_
+2. Install dependencies
+```bash
+npm install
+```
 
----
-Built with God's help and guidance 🙏🏻
+3. Start the development server
+```bash
+npm run dev
+```
+
+## 🛠️ API Endpoints
+
+### Authentication
+- `POST /auth/login` - Authenticate with Solana wallet
+
+### User Management
+- `POST /api/user/refresh-balance` - Update user's token balance and rank
+
+### Chat
+- `POST /api/chat/send` - Send message to AI
+
+### Proposals
+- `GET /api/proposals/active` - Get active proposals
+- `GET /api/proposals/:roundId` - Get proposals by round
+
+### Voting
+- `POST /api/vote` - Cast vote on proposal
+- `GET /api/vote/status/:roundId` - Get user's vote status in round
+
+### Admin Routes
+- `POST /api/admin/proposal` - Create new proposal
+- `POST /api/admin/round/end` - End voting round
+
+## 📐 Architecture
+
+The project follows a modular architecture with clear separation of concerns:
+
+- **Services**: Business logic implementation
+- **Models**: MongoDB schema definitions
+- **Routes**: API endpoint handlers
+- **Middleware**: Authentication and admin checks
+- **Types**: TypeScript type definitions
+
+## 🔐 Security Features
+
+- JWT-based authentication
+- Admin middleware for protected routes
+- Solana wallet signature verification
+- MongoDB sanitization
+- Request validation
+- Error handling middleware
+
+## 🛣️ Roadmap
+
+- [ ] Rate limiting
+- [ ] Additional security features
+- [ ] Enhanced error handling
+- [ ] Streaming AI responses to achieve a model like ChatGPT or Claude instead of waiting for HTTP responses

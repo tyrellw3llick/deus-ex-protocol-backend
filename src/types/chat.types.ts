@@ -7,11 +7,6 @@ export interface Message {
   aiName: AiName;
 }
 
-export interface ChatResponse {
-  response: string;
-  conversationId: string;
-}
-
 export interface SendMessageRequestBody {
   content: string;
   conversationId: string;

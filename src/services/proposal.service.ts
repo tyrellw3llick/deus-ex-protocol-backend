@@ -37,10 +37,9 @@ export class ProposalService {
   /**
    * Get all active proposals in current round
    */
-  static async getActiveProposals(roundId: number) {
+  static async getActiveProposals() {
     try {
       return await ProposalModel.find({
-        roundId,
         status: 'active',
       }).sort({ 'metrics.totalVotes': -1 });
     } catch (error) {
@@ -139,7 +138,7 @@ export class ProposalService {
    * Get all proposals in a specific round
    * Useful for showing round history
    */
-  static async getProposalByRoundId(roundId: number) {
+  static async getProposalsByRoundId(roundId: number) {
     try {
       return await ProposalModel.find({
         roundId,
@@ -165,7 +164,10 @@ export class ProposalService {
         roundId,
         status: 'active',
       })
-        .sort({ 'metrics.totalVotes': -1 })
+        .sort({
+          'metrics.totalVotes': -1,
+          'metrics.uniqueVoters': -1,
+        })
         .session(session);
 
       if (proposals.length === 0) {

@@ -5,7 +5,11 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
+import proposalRoutes from './routes/proposal.routes.js';
+import voteRoutes from './routes/vote.routes.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
+import { createErrorResponse } from './types/api.types.js';
+import { errorHandler } from './middleware/error.middleware.js';
 
 const app: Application = express();
 
@@ -21,29 +25,26 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Authentication routes - They are not protected
-
 app.use('/auth', authRoutes);
+
+//Admin routes
+app.use('/api/admin', proposalRoutes);
 
 // Protected routes with the JWT
 app.use('/api', authMiddleware);
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
-
-app.use((err: Error, req: Request, res: Response) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({
-    error: 'INTERNAL_SERVER_ERROR',
-    message: 'An unexpected error occurred',
-  });
-});
+app.use('/api/proposals', proposalRoutes);
+app.use('/api/vote', voteRoutes);
 
 // Not found handler
 app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    error: 'NOT_FOUND',
-    message: 'The requested resource was not found',
-  });
+  if (!res.headersSent) {
+    res.status(404).json(createErrorResponse('NOT_FOUND', 'The requested resource was not found'));
+  }
 });
+
+app.use(errorHandler);
 
 // Start server function
 const startServer = async (): Promise<void> => {

@@ -17,6 +17,11 @@ export interface SendMessageRequest extends AuthRequest {
   body: SendMessageRequestBody;
 }
 
+export interface ChatResponse {
+  response: string;
+  conversationId: string;
+}
+
 export class ChatError extends Error {
   constructor(
     message: string,

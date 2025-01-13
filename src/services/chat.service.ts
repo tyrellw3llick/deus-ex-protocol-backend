@@ -11,7 +11,7 @@ export class ChatService {
     apiKey: CONFIG.ANTHROPIC_API_KEY,
   });
 
-  private static readonly MAX_INPUT_TOKENS = 1000;
+  private static readonly MAX_INPUT_TOKENS = 300;
   private static readonly MAX_OUTPUT_TOKENS = 1024;
   private static readonly MAX_MESSAGES_IN_CONTEXT = 10;
   private static readonly CLAUDE_MODEL = 'claude-3-opus-20240229';

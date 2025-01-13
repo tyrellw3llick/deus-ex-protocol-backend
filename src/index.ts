@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import mongoSanitize from 'express-mongo-sanitize';
 import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
@@ -16,6 +17,7 @@ const app: Application = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(mongoSanitize());
 
 // ROUTES
 

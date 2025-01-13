@@ -11,6 +11,14 @@ import voteRoutes from './routes/vote.routes.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
 import { createErrorResponse } from './types/api.types.js';
 import { errorHandler } from './middleware/error.middleware.js';
+import {
+  globalLimiter,
+  authLimiter,
+  chatLimiter,
+  balanceLimiter,
+  voteLimiter,
+  proposalLimiter,
+} from './middleware/rateLimit.middleware.js';
 
 const app: Application = express();
 
@@ -18,6 +26,9 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 app.use(mongoSanitize());
+
+// Global rate limit to all routes
+app.use(globalLimiter);
 
 // ROUTES
 
@@ -27,17 +38,17 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Authentication routes - They are not protected
-app.use('/auth', authRoutes);
+app.use('/auth', authLimiter, authRoutes);
 
 //Admin routes
 app.use('/api/admin', proposalRoutes);
 
 // Protected routes with the JWT
 app.use('/api', authMiddleware);
-app.use('/api/user', userRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/proposals', proposalRoutes);
-app.use('/api/vote', voteRoutes);
+app.use('/api/user', balanceLimiter, userRoutes);
+app.use('/api/chat', chatLimiter, chatRoutes);
+app.use('/api/proposals', proposalLimiter, proposalRoutes);
+app.use('/api/vote', voteLimiter, voteRoutes);
 
 // Not found handler
 app.use((req: Request, res: Response) => {

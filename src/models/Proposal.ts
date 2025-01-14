@@ -65,7 +65,7 @@ const proposalSchema = new Schema<IProposal>({
     type: Date,
     required: true,
     validate: {
-      validator: (endDate: Date) => endDate <= new Date(),
+      validator: (endDate: Date) => endDate > new Date(),
       message: 'End date must be in the future',
     },
   },

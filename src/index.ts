@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import { CONFIG } from './config/env.js';
 import { connectDB } from './config/db.js';
@@ -24,8 +25,30 @@ const app: Application = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50kb' }));
 app.use(mongoSanitize());
+app.use(
+  helmet({
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"], // Only allow resources from same origin
+        scriptSrc: ["'self'"], // Only allow scripts from same origin
+        connectSrc: ["'self'", 'https://api.mainnet-beta.solana.com'], // Allow connections to Solana RPC
+        imgSrc: ["'self'", 'data:', 'https:'], // Allow images from same origin and data URIs
+        styleSrc: ["'self'", "'unsafe-inline'"], // Allow styles from same origin
+      },
+    },
+    hidePoweredBy: true,
+    frameguard: {
+      action: 'deny',
+    },
+  }),
+);
 
 // Global rate limit to all routes
 app.use(globalLimiter);

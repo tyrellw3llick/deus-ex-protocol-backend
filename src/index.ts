@@ -20,6 +20,7 @@ import {
   voteLimiter,
   proposalLimiter,
 } from './middleware/rateLimit.middleware.js';
+import mongoose from 'mongoose';
 
 const app: Application = express();
 
@@ -82,16 +83,47 @@ app.use((req: Request, res: Response) => {
 
 app.use(errorHandler);
 
-// Start server function
 const startServer = async (): Promise<void> => {
   try {
     // Connect to MongoDB first
     await connectDB();
 
-    // Then start Express server
-    app.listen(CONFIG.PORT, () => {
+    // Store server instance
+    const server = app.listen(CONFIG.PORT, () => {
       console.log(`Server running in ${CONFIG.NODE_ENV} mode on port ${CONFIG.PORT}`);
     });
+
+    // Graceful shutdown handler
+    const shutdownGracefully = async () => {
+      console.log('\nShutting down gracefully...');
+
+      // Set a timeout of 5 seconds
+      const forceExit = setTimeout(() => {
+        console.log('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+      }, 5000);
+
+      try {
+        // Close server first
+        await new Promise((resolve) => server.close(resolve));
+        console.log('Server closed');
+
+        // Then close MongoDB
+        await mongoose.connection.close();
+        console.log('MongoDB connection closed');
+
+        // Clear the timeout since we succeeded
+        clearTimeout(forceExit);
+        process.exit(0);
+      } catch (err) {
+        console.error('Error during shutdown:', err);
+        process.exit(1);
+      }
+    };
+
+    // Handle both SIGTERM and SIGINT
+    process.on('SIGTERM', shutdownGracefully);
+    process.on('SIGINT', shutdownGracefully);
   } catch (error) {
     console.error(
       '❌ Failed to start server:',

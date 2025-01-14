@@ -17,6 +17,18 @@ export interface SendMessageRequest extends AuthRequest {
   body: SendMessageRequestBody;
 }
 
+export interface GetConversationsRequest extends AuthRequest {
+  query: {
+    cursor?: string;
+  };
+}
+
+export interface GetMessagesRequest extends AuthRequest {
+  params: {
+    conversationId: string;
+  };
+}
+
 export interface ChatResponse {
   response: string;
   conversationId: string;

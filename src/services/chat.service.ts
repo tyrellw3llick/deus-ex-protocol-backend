@@ -215,7 +215,7 @@ export class ChatService {
 
       const aiMessageResponse = response.content[0].text;
 
-      this.storeMessages(objectId, trimmedContent, aiMessageResponse).catch((err) =>
+      this.storeMessages(conversation._id, trimmedContent, aiMessageResponse).catch((err) =>
         console.error('Failed to store message', err),
       );
 

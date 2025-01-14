@@ -5,7 +5,14 @@ import ConversationModel from '../models/Conversation.js';
 import { ChatError, ChatResponse, Message } from '../types/chat.types.js';
 import { RankService } from './rank.service.js';
 import { AiService } from './ai.service.js';
+import { Types } from 'mongoose';
 
+interface ConversationQuery {
+  userId: string;
+  lastMessageAt?: {
+    $lt: Date;
+  };
+}
 export class ChatService {
   private static anthropic = new Anthropic({
     apiKey: CONFIG.ANTHROPIC_API_KEY,
@@ -13,15 +20,84 @@ export class ChatService {
 
   private static readonly MAX_INPUT_TOKENS = 300;
   private static readonly MAX_OUTPUT_TOKENS = 1024;
+  private static readonly CONVERSATIONS_PER_PAGE = 10;
   private static readonly MAX_MESSAGES_IN_CONTEXT = 10;
   private static readonly CLAUDE_MODEL = 'claude-3-opus-20240229';
+
+  /**
+   * Get user's conversation with cursor-based pagination
+   */
+  static async getUserConversations(walletAddress: string, cursor?: string) {
+    try {
+      const query: ConversationQuery = { userId: walletAddress };
+
+      if (cursor) {
+        query.lastMessageAt = { $lt: new Date(cursor) };
+      }
+
+      const conversations = await ConversationModel.find(query)
+        .sort({ lastMessageAt: -1 })
+        .limit(this.CONVERSATIONS_PER_PAGE + 1)
+        .lean()
+        .exec();
+
+      const hasMore = conversations.length > this.CONVERSATIONS_PER_PAGE;
+      if (hasMore) {
+        conversations.pop();
+      }
+
+      const nextCursor = hasMore
+        ? conversations[conversations.length - 1].lastMessageAt.toISOString()
+        : null;
+
+      return {
+        conversations,
+        hasMore,
+        nextCursor,
+      };
+    } catch (error) {
+      console.error('Error fetching conversations', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get ALL messages for a conversation
+   */
+  static async getConversationMessages(conversationId: string, walletAddress: string) {
+    try {
+      const objectId = new Types.ObjectId(conversationId);
+
+      const conversation = await ConversationModel.findOne({
+        _id: objectId,
+        userId: walletAddress,
+      });
+
+      if (!conversation) {
+        throw new ChatError('Conversation not found', 'NOT_FOUND', 404);
+      }
+
+      const messages = await MessageModel.find({ conversationId: objectId })
+        .sort({ timestamp: 1 })
+        .lean()
+        .exec();
+
+      return messages;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'CastError') {
+        throw new ChatError('Invalid conversation ID', 'INVALID_INPUT', 400);
+      }
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
+  }
 
   /**
    * Prepares the conversation context for the AI
    * Retrieves previous messages if conversationId exists
    */
   private static async prepareMessages(
-    conversationId: string | undefined,
+    conversationId: Types.ObjectId | undefined,
     content: string,
   ): Promise<Array<{ role: 'user' | 'assistant'; content: string }>> {
     if (!conversationId) return [{ role: 'user', content: content }];
@@ -61,7 +137,7 @@ export class ChatService {
    * This is done asynchronously to not block the response
    */
   private static async storeMessages(
-    conversationId: string,
+    conversationId: Types.ObjectId,
     userMessage: string,
     aiResponse: string,
   ): Promise<void> {
@@ -99,7 +175,9 @@ export class ChatService {
       throw new ChatError('Daily message quota exceeded', 'QUOTA_EXCEEDED', 403);
     }
 
-    const messages = await this.prepareMessages(conversationId, trimmedContent);
+    const objectId = conversationId ? new Types.ObjectId(conversationId) : undefined;
+
+    const messages = await this.prepareMessages(objectId, trimmedContent);
 
     const tokenCount = await this.anthropic.messages.countTokens({
       model: this.CLAUDE_MODEL,
@@ -112,7 +190,7 @@ export class ChatService {
     }
 
     const conversation = conversationId
-      ? await ConversationModel.findById(conversationId)
+      ? await ConversationModel.findById(objectId)
       : await this.createNewConversation(userId, trimmedContent, aiName);
 
     if (!conversation) {
@@ -137,8 +215,8 @@ export class ChatService {
 
       const aiMessageResponse = response.content[0].text;
 
-      this.storeMessages(conversation._id.toString(), trimmedContent, aiMessageResponse).catch(
-        (err) => console.error('Filed to store message', err),
+      this.storeMessages(objectId, trimmedContent, aiMessageResponse).catch((err) =>
+        console.error('Failed to store message', err),
       );
 
       return {

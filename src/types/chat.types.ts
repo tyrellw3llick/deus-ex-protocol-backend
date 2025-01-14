@@ -25,7 +25,12 @@ export interface ChatResponse {
 export class ChatError extends Error {
   constructor(
     message: string,
-    public code: 'QUOTA_EXCEEDED' | 'INVALID_INPUT' | 'INPUT_TOKENS_EXCEEDED' | 'AI_SERVICE_ERROR',
+    public code:
+      | 'QUOTA_EXCEEDED'
+      | 'INVALID_INPUT'
+      | 'INPUT_TOKENS_EXCEEDED'
+      | 'AI_SERVICE_ERROR'
+      | 'NOT_FOUND',
     public statusCode: number,
   ) {
     super(message);

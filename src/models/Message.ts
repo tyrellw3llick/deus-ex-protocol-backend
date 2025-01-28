@@ -13,7 +13,7 @@ const messageSchema = new Schema<IMessage>({
     type: String,
     required: true,
     minlength: [1, 'Message content cannot be empty'],
-    maxlength: [300, 'Message content is too long'],
+    maxlength: [4000, 'Message content is too long'],
     trim: true,
     validate: {
       validator: (content: string) => contentValidator.noMaliciousContent(content),

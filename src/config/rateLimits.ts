@@ -13,7 +13,7 @@ export const RATE_LIMITS = {
     },
 
     chat: {
-      points: 5, // 5 messages
+      points: 20, // 5 messages
       duration: 60, // per minute
       blockDuration: 60 * 5, // Block for 5 minutes if exceeded
     },

@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
 import proposalRoutes from './routes/proposal.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import voteRoutes from './routes/vote.routes.js';
 import { authMiddleware } from './middleware/auth.middleware.js';
 import { createErrorResponse } from './types/api.types.js';
@@ -52,7 +53,7 @@ app.use(
 );
 
 // Global rate limit to all routes
-app.use(globalLimiter);
+//app.use(globalLimiter);
 
 // ROUTES
 
@@ -62,7 +63,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Authentication routes - They are not protected
-app.use('/auth', authLimiter, authRoutes);
+app.use('/auth', authRoutes);
 
 //Admin routes
 app.use('/api/admin', proposalRoutes);
@@ -73,6 +74,7 @@ app.use('/api/user', balanceLimiter, userRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/proposals', proposalLimiter, proposalRoutes);
 app.use('/api/vote', voteLimiter, voteRoutes);
+app.use('/api/ai', proposalLimiter, aiRoutes);
 
 // Not found handler
 app.use((req: Request, res: Response) => {

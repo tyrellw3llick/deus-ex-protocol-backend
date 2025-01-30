@@ -18,15 +18,26 @@ const AVAILABLE_AIS: aiInfo[] = [
 
 export class AiService {
   static getSystemPrompt(aiName: AiName): string {
-    const baseInstructions = `${BASE_CONTEXT}`;
+    try {
+      const baseInstructions = `${BASE_CONTEXT}`;
+      console.log('Generating prompt for AI:', aiName);
 
-    switch (aiName) {
-      case 'MACHINA':
-        return `${baseInstructions}\n${DEUS_EX_MACHINA.personality}\n${DEUS_EX_MACHINA.examples}`;
-      case 'SAKURA':
-        return `${baseInstructions}\n${SAKURA_INSTRUCTIONS.personality}\n${SAKURA_INSTRUCTIONS.examples}`;
-      default:
-        throw new Error(`Unknown AI assistant: ${aiName}`);
+      switch (aiName) {
+        case 'MACHINA':
+          return `${baseInstructions}\n${DEUS_EX_MACHINA.personality}\n${DEUS_EX_MACHINA.examples}`;
+        case 'SAKURA':
+          console.log('SAKURA instructions:', SAKURA_INSTRUCTIONS);
+          return `${baseInstructions}\n${SAKURA_INSTRUCTIONS.personality}\n${SAKURA_INSTRUCTIONS.examples}`;
+        default:
+          throw new Error(`Unknown AI assistant: ${aiName}`);
+      }
+    } catch (error) {
+      console.error('Error in getSystemPrompt:', {
+        error,
+        aiName,
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
+      throw error;
     }
   }
 

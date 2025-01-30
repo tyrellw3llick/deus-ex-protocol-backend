@@ -227,6 +227,13 @@ export class ChatService {
       if (error instanceof Anthropic.APIError || error instanceof Anthropic.RateLimitError) {
         throw new ChatError('AI service temporarily unavailable', 'AI_SERVICE_ERROR', 503);
       }
+      console.error('Detailed chat error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        userId,
+        aiName: message.aiName,
+      });
       throw error;
     }
   }

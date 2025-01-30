@@ -26,7 +26,7 @@ const conversationSchema = new Schema<IConversation>({
     required: true,
     default: 'MACHINA',
     enum: {
-      values: ['MACHINA'] as AiName[],
+      values: ['MACHINA', 'SAKURA'] as AiName[],
       message: 'Invalid AI assistant name',
     },
   },

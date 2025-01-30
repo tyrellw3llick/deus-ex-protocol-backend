@@ -1,4 +1,4 @@
-export type AiName = 'MACHINA';
+export type AiName = 'MACHINA' | 'SAKURA';
 
 export interface AiInstructions {
   personality: string;
@@ -6,6 +6,7 @@ export interface AiInstructions {
 }
 
 export interface aiInfo {
+  id: string;
   name: AiName;
   description: string;
 }

@@ -13,8 +13,8 @@ const router = Router();
  */
 const getAvailableAIsHandler = async (req: AuthRequest, res: Response) => {
   try {
-    const ais = AiService.getAvailableAis();
-    res.status(200).json(createSuccessResponse({ ais }));
+    const data = AiService.getAvailableAis();
+    res.status(200).json(createSuccessResponse(data));
   } catch (error) {
     console.error('Error fetching AIs:', error);
     res.status(500).json(createErrorResponse('INTERNAL_ERROR', 'Failed to fetch AIs'));

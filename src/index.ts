@@ -73,7 +73,7 @@ app.use('/api', authMiddleware);
 app.use('/api/user', balanceLimiter, userRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/proposals', proposalLimiter, proposalRoutes);
-app.use('/api/vote', voteLimiter, voteRoutes);
+app.use('/api/vote', voteRoutes);
 app.use('/api/ai', proposalLimiter, aiRoutes);
 
 // Not found handler

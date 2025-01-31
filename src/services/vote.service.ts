@@ -4,6 +4,8 @@ import VoteModel from '../models/Vote.js';
 import { ProposalService } from './proposal.service.js';
 import { RankService } from './rank.service.js';
 
+// File: services/vote.service.ts
+
 export class VoteService {
   static async castVote(userId: string, proposalId: Types.ObjectId | string, tokenBalance: number) {
     const session = await mongoose.startSession();
@@ -13,7 +15,8 @@ export class VoteService {
       const proposalObjectId =
         typeof proposalId === 'string' ? new Types.ObjectId(proposalId) : proposalId;
 
-      const proposal = await ProposalService.getProposalById(proposalObjectId);
+      // Check if proposal exists and is active
+      const proposal = await ProposalModel.findById(proposalObjectId);
       if (!proposal || proposal.status !== 'active') {
         throw new Error('Proposal not existing nor active');
       }
@@ -26,51 +29,8 @@ export class VoteService {
       const rankTier = RankService.getRankTier(tokenBalance);
       const voteWeight = tokenBalance * rankTier.voteWeight;
 
-      if (existingVote) {
-        // Same proposal - no changes needed
-        if (existingVote.proposalId.toString() === proposalObjectId.toString()) {
-          await session.abortTransaction();
-          return existingVote;
-        }
-
-        // Remove metrics from old proposal
-        await ProposalModel.findByIdAndUpdate(
-          existingVote.proposalId,
-          {
-            $inc: {
-              'metrics.totalVotes': -existingVote.weight,
-              'metrics.totalTokensVoted': -existingVote.tokenBalance,
-              'metrics.uniqueVoters': -1,
-            },
-          },
-          { session },
-        );
-
-        // Update existing vote
-        await VoteModel.findByIdAndUpdate(
-          existingVote._id,
-          {
-            proposalId: proposalObjectId,
-            weight: voteWeight,
-            tokenBalance,
-          },
-          { session },
-        );
-
-        // Add metrics to new proposal (no uniqueVoters increment)
-        await ProposalModel.findByIdAndUpdate(
-          proposalObjectId,
-          {
-            $inc: {
-              'metrics.totalVotes': voteWeight,
-              'metrics.totalTokensVoted': tokenBalance,
-              // Don't increment uniqueVoters - user is just moving their vote
-            },
-          },
-          { session },
-        );
-      } else {
-        // Create new vote
+      // First time voting
+      if (!existingVote) {
         await VoteModel.create(
           [
             {
@@ -84,22 +44,81 @@ export class VoteService {
           { session },
         );
 
-        // Add metrics for new voter
         await ProposalModel.findByIdAndUpdate(
           proposalObjectId,
           {
-            $inc: {
+            $set: {
               'metrics.totalVotes': voteWeight,
               'metrics.totalTokensVoted': tokenBalance,
-              'metrics.uniqueVoters': 1, // New voter
+              'metrics.uniqueVoters': 1,
             },
+          },
+          { session },
+        );
+      } else if (existingVote.proposalId.toString() === proposalObjectId.toString()) {
+        // Update vote for same proposal (only if weight changed)
+        if (existingVote.weight !== voteWeight) {
+          await VoteModel.findByIdAndUpdate(
+            existingVote._id,
+            {
+              weight: voteWeight,
+              tokenBalance,
+            },
+            { session },
+          );
+
+          await ProposalModel.findByIdAndUpdate(
+            proposalObjectId,
+            {
+              $set: {
+                'metrics.totalVotes': voteWeight,
+                'metrics.totalTokensVoted': tokenBalance,
+              },
+            },
+            { session },
+          );
+        }
+      } else {
+        // Change vote to different proposal
+        // 1. Reset old proposal metrics
+        await ProposalModel.findByIdAndUpdate(
+          existingVote.proposalId,
+          {
+            $set: {
+              'metrics.totalVotes': 0,
+              'metrics.totalTokensVoted': 0,
+              'metrics.uniqueVoters': 0,
+            },
+          },
+          { session },
+        );
+
+        // 2. Set new proposal metrics
+        await ProposalModel.findByIdAndUpdate(
+          proposalObjectId,
+          {
+            $set: {
+              'metrics.totalVotes': voteWeight,
+              'metrics.totalTokensVoted': tokenBalance,
+              'metrics.uniqueVoters': 1,
+            },
+          },
+          { session },
+        );
+
+        // 3. Update vote record
+        await VoteModel.findByIdAndUpdate(
+          existingVote._id,
+          {
+            proposalId: proposalObjectId,
+            weight: voteWeight,
+            tokenBalance,
           },
           { session },
         );
       }
 
       await session.commitTransaction();
-
       return await VoteModel.findOne({
         userId,
         roundId: proposal.roundId,

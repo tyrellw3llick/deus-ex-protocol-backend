@@ -13,7 +13,8 @@ jobs:
       - name: Build Docker image
         run: |
           docker build . --file Dockerfile --tag deus-ex-api:latest
-          docker save deus-ex-api:latest > /tmp/deus-ex-api.tar
+          docker save deus-ex-api:latest > deus-ex-api.tar
+          ls -la deus-ex-api.tar  # Debug: verify file exists
 
       - name: Deploy to Digital Ocean droplet
         uses: appleboy/scp-action@master
@@ -21,7 +22,7 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: root
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
-          source: "/tmp/deus-ex-api.tar"
+          source: "deus-ex-api.tar"
           target: "/root"
           
       - name: Start Docker container

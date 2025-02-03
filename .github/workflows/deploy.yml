@@ -1,0 +1,52 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and export
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          tags: deus-ex-api:latest
+          outputs: type=docker,dest=/tmp/deus-ex-api.tar
+
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.DIGITALOCEAN_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DIGITALOCEAN_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Transfer Docker image
+        run: |
+          scp /tmp/deus-ex-api.tar root@${{ secrets.DIGITALOCEAN_HOST }}:/root/
+
+      - name: Deploy
+        run: |
+          ssh root@${{ secrets.DIGITALOCEAN_HOST }} '
+            # Load the new image
+            docker load < /tmp/deus-ex-api.tar
+
+            # Create or update .env file
+            echo "${{ secrets.ENV_FILE }}" > .env
+
+            # Stop and remove existing container (if exists)
+            docker compose down || true
+
+            # Start new container
+            docker compose up -d
+
+            # Clean up old images
+            docker image prune -f
+          '

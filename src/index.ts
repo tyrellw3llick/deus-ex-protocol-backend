@@ -26,7 +26,11 @@ import mongoose from 'mongoose';
 const app: Application = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ['https://deusexprotocol.com', 'https://www.deusexprotocol.com'],
+  }),
+);
 app.use(express.json({ limit: '50kb' }));
 app.use(mongoSanitize());
 app.use(

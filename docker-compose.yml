@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   api:
-    build: deus-ex-api:latest
+    image: deus-ex-api:latest
     ports:
       - "3000:3000"
     env_file:

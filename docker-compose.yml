@@ -3,8 +3,8 @@ services:
     image: deus-ex-api:latest
     ports:
       - "3000:3000"
-    env_file:
-      - .env
+    volumes:
+      - ./.env:/app/.env
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:3000/health"]

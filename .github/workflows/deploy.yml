@@ -36,3 +36,4 @@ jobs:
             docker compose down || true
             docker compose up -d
             rm deus-ex-api.tar  # Cleanup after deployment
+            docker system prune -af

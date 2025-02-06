@@ -57,28 +57,28 @@ app.use(
 );
 
 // Global rate limit to all routes
-//app.use(globalLimiter);
+app.use(globalLimiter);
 
 // ROUTES
 
 // Basic health check route
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 
 // Authentication routes - They are not protected
-app.use('/auth', authRoutes);
-
-//Admin routes
-app.use('/api/admin', proposalRoutes);
+app.use('/auth', authLimiter, authRoutes);
 
 // Protected routes with the JWT
 app.use('/api', authMiddleware);
 app.use('/api/user', balanceLimiter, userRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/proposals', proposalLimiter, proposalRoutes);
-app.use('/api/vote', voteRoutes);
+app.use('/api/vote', voteLimiter, voteRoutes);
 app.use('/api/ai', proposalLimiter, aiRoutes);
+
+//Admin routes
+app.use('/api/admin', authMiddleware, proposalRoutes);
 
 // Not found handler
 app.use((req: Request, res: Response) => {

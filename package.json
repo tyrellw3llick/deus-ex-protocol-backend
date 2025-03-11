@@ -27,7 +27,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2"
   },
@@ -43,6 +43,6 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.2"
+    "mongoose": "^8.9.5"
   }
 }

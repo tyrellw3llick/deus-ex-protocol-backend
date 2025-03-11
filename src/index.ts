@@ -28,7 +28,11 @@ const app: Application = express();
 // Middleware
 app.use(
   cors({
-    origin: ['https://deusexprotocol.com', 'https://www.deusexprotocol.com'],
+    origin: [
+      'https://deusexprotocol.com',
+      'https://www.deusexprotocol.com',
+      'http://localhost:5173',
+    ],
   }),
 );
 app.use(express.json({ limit: '50kb' }));

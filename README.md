@@ -2,6 +2,10 @@
 
 The first decentralized AI chatbot protocol powered by a memecoin: $MACHINA token on Solana. The protocol enables token-gated AI interactions with customizable personalities and community-driven development through a democratic voting system.
 
+### Demo:
+
+[Watch the product demo here](https://www.youtube.com/watch?v=R_TMCzLqK5k)
+
 ## 🚀 Core Features
 
 ### Token-Gated Access
